@@ -104,7 +104,7 @@ struct JunieModelUsage {
 pub(super) struct JunieUsageEntry {
     timestamp: TimestampMs,
     timestamp_text: String,
-    session_id: String,
+    pub(super) session_id: String,
     model: String,
     input_tokens: u64,
     output_tokens: u64,
