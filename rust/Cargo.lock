@@ -350,6 +350,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "ccusage-adapter-junie"
+version = "0.0.0"
+dependencies = [
+ "ccusage-adapter-common",
+ "ccusage-core",
+ "ccusage-test-support",
+ "insta",
+ "jiff",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "ccusage-adapter-kilo"
 version = "0.0.0"
 dependencies = [
