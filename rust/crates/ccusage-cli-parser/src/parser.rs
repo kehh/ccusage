@@ -49,6 +49,9 @@ impl RootAllOptions {
             codex_speed: CodexSpeed::Auto,
             include_claude_agent: false,
             start_of_week: WeekDay::Monday,
+            instances: false,
+            project: None,
+            project_aliases: None,
             sources: BTreeMap::new(),
         }
     }
@@ -444,6 +447,9 @@ fn parse_all_command(
         codex_speed: CodexSpeed::Auto,
         include_claude_agent: false,
         start_of_week,
+        instances: false,
+        project: None,
+        project_aliases: None,
         sources: BTreeMap::new(),
     }))
 }
@@ -491,6 +497,9 @@ fn parse_top_level_session_command(
         codex_speed: CodexSpeed::Auto,
         include_claude_agent: false,
         start_of_week: WeekDay::Monday,
+        instances: false,
+        project: None,
+        project_aliases: None,
         sources: BTreeMap::new(),
     }))
 }
@@ -677,6 +686,9 @@ fn parse_codex_command(
         codex_speed,
         include_claude_agent: false,
         start_of_week: WeekDay::Monday,
+        instances: false,
+        project: None,
+        project_aliases: None,
         sources: BTreeMap::new(),
     }))
 }
@@ -710,6 +722,9 @@ fn parse_pi_command(
         codex_speed,
         include_claude_agent: false,
         start_of_week: WeekDay::Monday,
+        instances: false,
+        project: None,
+        project_aliases: None,
         sources: BTreeMap::new(),
     }))
 }
@@ -743,6 +758,9 @@ fn parse_openclaw_command(
         codex_speed,
         include_claude_agent: false,
         start_of_week: WeekDay::Monday,
+        instances: false,
+        project: None,
+        project_aliases: None,
         sources: BTreeMap::new(),
     }))
 }
@@ -777,6 +795,9 @@ fn agent_command_args(shared: SharedArgs, kind: AgentReportKind) -> AgentCommand
         codex_speed: CodexSpeed::Auto,
         include_claude_agent: false,
         start_of_week: WeekDay::Monday,
+        instances: false,
+        project: None,
+        project_aliases: None,
         sources: BTreeMap::new(),
     }
 }

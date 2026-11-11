@@ -184,6 +184,12 @@ pub struct AgentCommandArgs {
     /// Keeps OpenCode `claude-agent` turns that the Claude source also counts.
     pub include_claude_agent: bool,
     pub start_of_week: WeekDay,
+    /// Show per-session project instances (daily report).
+    pub instances: bool,
+    /// Filter to a project name or path.
+    pub project: Option<String>,
+    /// JSON object or path mapping project paths to display aliases.
+    pub project_aliases: Option<String>,
     /// Per-source options of a unified report, keyed by agent name. A source
     /// without an entry loads with `shared`.
     pub sources: BTreeMap<String, SourceArgs>,
@@ -337,6 +343,11 @@ pub trait CliConfig {
         _open_claw_path: Option<&mut Option<String>>,
     ) {
     }
+
+    /// Applies a config's daily-specific options (instances, project,
+    /// projectAliases) to an agent command. Agents without project support
+    /// keep the default no-op.
+    fn apply_agent_daily_options(&self, _args: &mut AgentCommandArgs) {}
 }
 
 pub struct NoConfig;

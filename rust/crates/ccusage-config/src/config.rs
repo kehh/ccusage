@@ -7,9 +7,9 @@ use std::{
 use serde_json::{Map, Value};
 
 use ccusage_cli::{
-    BlocksArgs, CodexSpeed, CostMode, CostSource, DATE_BOUND_FORMATS, DailyArgs, NamedPiStore,
-    PricingOverride, SharedArgs, SortOrder, StatuslineArgs, VisualBurnRate, WeekDay, WeeklyArgs,
-    normalize_date_bound,
+    AgentCommandArgs, BlocksArgs, CodexSpeed, CostMode, CostSource, DATE_BOUND_FORMATS, DailyArgs,
+    NamedPiStore, PricingOverride, SharedArgs, SortOrder, StatuslineArgs, VisualBurnRate, WeekDay,
+    WeeklyArgs, normalize_date_bound,
 };
 
 use crate::config_schema::{
@@ -457,6 +457,21 @@ fn apply_config_to_daily_args(args: &mut DailyArgs, config: &ConfigContext) {
     }
 }
 
+fn apply_config_to_agent_daily_options(args: &mut AgentCommandArgs, config: &ConfigContext) {
+    for options in config.option_maps() {
+        let options = DailySpecificOptions::from_map(options);
+        if let Some(instances) = options.instances {
+            args.instances = instances;
+        }
+        if let Some(project) = options.project {
+            args.project = Some(project);
+        }
+        if let Some(project_aliases) = options.project_aliases {
+            args.project_aliases = Some(project_aliases);
+        }
+    }
+}
+
 fn apply_config_to_weekly_args(args: &mut WeeklyArgs, config: &ConfigContext) {
     for options in config.option_maps() {
         if let Some(day) = WeeklySpecificOptions::from_map(options).start_of_week {
@@ -591,6 +606,10 @@ impl ccusage_cli::CliConfig for ConfigContext {
         open_claw_path: Option<&mut Option<String>>,
     ) {
         apply_config_to_agent_args(codex_speed, pi_path, open_claw_path, self);
+    }
+
+    fn apply_agent_daily_options(&self, args: &mut AgentCommandArgs) {
+        apply_config_to_agent_daily_options(args, self);
     }
 }
 

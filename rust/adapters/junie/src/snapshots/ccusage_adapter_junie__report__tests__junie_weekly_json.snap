@@ -1,0 +1,75 @@
+---
+source: adapters/junie/src/report.rs
+expression: "report_from_rows(&weekly, AgentReportKind::Weekly)"
+---
+{
+  "totals": {
+    "cacheCreationTokens": 20,
+    "cacheReadTokens": 15,
+    "inputTokens": 212,
+    "outputTokens": 47,
+    "totalCost": 0.003,
+    "totalTokens": 294,
+    "unpricedModels": [
+      "vendor/custom-model"
+    ]
+  },
+  "weekly": [
+    {
+      "cacheCreationTokens": 20,
+      "cacheReadTokens": 15,
+      "inputTokens": 152,
+      "modelBreakdowns": [
+        {
+          "cacheCreationTokens": 15,
+          "cacheReadTokens": 10,
+          "cost": 0.002,
+          "inputTokens": 112,
+          "modelName": "gpt-4.1-2025-04-14",
+          "outputTokens": 28,
+          "storedCost": 0.002
+        },
+        {
+          "cacheCreationTokens": 5,
+          "cacheReadTokens": 5,
+          "cost": 0.001,
+          "inputTokens": 40,
+          "modelName": "Qwen/Qwen3.6-27B-FP8",
+          "outputTokens": 12,
+          "storedCost": 0.001
+        }
+      ],
+      "modelsUsed": [
+        "gpt-4.1-2025-04-14",
+        "Qwen/Qwen3.6-27B-FP8"
+      ],
+      "outputTokens": 40,
+      "totalCost": 0.003,
+      "totalTokens": 227,
+      "week": "2026-10-26"
+    },
+    {
+      "cacheCreationTokens": 0,
+      "cacheReadTokens": 0,
+      "inputTokens": 60,
+      "modelBreakdowns": [
+        {
+          "cacheCreationTokens": 0,
+          "cacheReadTokens": 0,
+          "cost": 0.0,
+          "inputTokens": 60,
+          "missingPricing": true,
+          "modelName": "vendor/custom-model",
+          "outputTokens": 7
+        }
+      ],
+      "modelsUsed": [
+        "vendor/custom-model"
+      ],
+      "outputTokens": 7,
+      "totalCost": 0.0,
+      "totalTokens": 67,
+      "week": "2026-11-02"
+    }
+  ]
+}
