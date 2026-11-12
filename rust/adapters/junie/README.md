@@ -64,13 +64,13 @@ may surface missing-pricing warnings — accepted, standard behavior.
 
 - `loader::load_entries`
 - `report::summarize_entries`
-- `report::summarize_daily_grouped_by_project`
 - `run`
 
 ## Depends on
 
 - `ccusage-adapter-common`
 - `ccusage-core`
+- `ccusage-report`
 - `jiff`
 - `serde`
 - `serde_json`

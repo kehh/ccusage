@@ -82,7 +82,7 @@ With `--instances --json`, the output groups rows by `projectDir` and adds combi
 }
 ```
 
-`--instances` and `--project-aliases` shape only the daily report. Weekly and monthly reports merge projects into their date buckets by design, and `--project` remains the way to narrow them. When no session carries project metadata, `--instances --json` falls back to the plain daily report.
+`--instances` and `--project-aliases` shape only the daily report. Weekly and monthly reports merge projects into their date buckets by design, and `--project` remains the way to narrow them. Sessions that are missing from `index.jsonl` group under the `unknown` project key in both the table and `--instances --json`.
 
 Unified reports such as `ccusage daily` include Junie usage, but the `--project` filter on a unified command applies only to Claude Code. Run a focused `ccusage junie` command when you need to filter or group Junie projects.
 

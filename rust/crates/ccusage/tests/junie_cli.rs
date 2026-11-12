@@ -132,6 +132,31 @@ fn junie_instances_json_groups_by_project() {
 }
 
 #[test]
+fn junie_instances_json_groups_unindexed_sessions_under_unknown() {
+    let fixture = fs_fixture!({
+        "sessions/session-261007-120000-aaaa/events.jsonl": include_str!(
+            "../../../adapters/junie/tests/fixtures/current/events.jsonl"
+        ),
+        "sessions/session-261008-130000-bbbb/events.jsonl": include_str!(
+            "../../../adapters/junie/tests/fixtures/current/events-b.jsonl"
+        ),
+    });
+
+    let output = run_kind(&fixture, "daily", &["--instances"], true);
+    let report: Value = serde_json::from_str(&output).expect("instances JSON should be valid");
+    let projects = report["projects"]
+        .as_object()
+        .expect("projects should be an object");
+
+    assert_eq!(
+        projects.keys().collect::<Vec<_>>(),
+        ["unknown"],
+        "sessions missing from index.jsonl group under the unknown project"
+    );
+    assert_totals(&report, COMBINED_TOTALS);
+}
+
+#[test]
 fn snapshots_junie_instances_and_project_alias_tables() {
     let fixture = junie_fixture();
 
