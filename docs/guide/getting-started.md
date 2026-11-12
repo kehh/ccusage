@@ -53,6 +53,7 @@ ccusage cline daily
 ccusage kilo daily
 ccusage kimi daily
 ccusage qwen daily
+ccusage junie daily
 ```
 
 ## Your First Report
@@ -103,6 +104,7 @@ Now that you have your first unified view, explore these features:
 5. **[Configuration](/guide/configuration)** - Customize ccusage behavior
 6. **[Claude Code](/guide/claude/)** - Claude Code-specific setup and features
 7. **[Cline](/guide/cline/)** - Cline extension and CLI data locations
+8. **[Junie](/guide/junie/)** - Junie session data, project filtering, and per-project reports
 
 ## Common Use Cases
 
@@ -184,6 +186,7 @@ If ccusage shows no data, check:
    - Antigravity: `${ANTIGRAVITY_DATA_DIR:-~/.gemini/antigravity*}` or `~/.config/antigravity`
    - Grok Build CLI: `${GROK_HOME:-~/.grok}`
    - ZCode: `${ZCODE_HOME:-~/.zcode}/cli/db/db.sqlite`
+   - Junie: `${JUNIE_HOME:-~/.junie}/sessions/*/events.jsonl`
 
 ### Custom Data Directory
 
@@ -209,9 +212,10 @@ export ANTIGRAVITY_DATA_DIR="/path/to/antigravity"
 export COPILOT_OTEL_FILE_EXPORTER_PATH="/path/to/copilot-otel.jsonl"
 export GROK_HOME="/path/to/grok-home"
 export ZCODE_HOME="/path/to/zcode-home"
+export JUNIE_HOME="/path/to/junie-home"
 ```
 
-Directory variables can contain comma-separated directories, except `COPILOT_HOME` and `GROK_HOME`, which take a single root. `COPILOT_OTEL_FILE_EXPORTER_PATH` points to one JSONL file, and `ZCODE_HOME` supports multiple roots and deduplicates them:
+Directory variables can contain comma-separated directories, except `COPILOT_HOME`, `GROK_HOME`, and `JUNIE_HOME`, which take a single root. `COPILOT_OTEL_FILE_EXPORTER_PATH` points to one JSONL file, and `ZCODE_HOME` supports multiple roots and deduplicates them:
 
 ```bash
 export CODEX_HOME="/path/to/codex,/archive/codex,/path/to/codex-exec-jsonl"

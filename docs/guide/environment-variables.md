@@ -4,7 +4,7 @@ ccusage supports several environment variables for configuration and customizati
 
 ## Agent Data Directories
 
-ccusage detects supported data source files from conventional locations by default. Set these variables when your data lives somewhere else. Directory variables can be one directory or a comma-separated list of directories; `COPILOT_HOME` and `GROK_HOME` accept a single root, while `COPILOT_OTEL_FILE_EXPORTER_PATH` points at one explicit JSONL export file:
+ccusage detects supported data source files from conventional locations by default. Set these variables when your data lives somewhere else. Directory variables can be one directory or a comma-separated list of directories; `COPILOT_HOME`, `GROK_HOME`, and `JUNIE_HOME` accept a single root, while `COPILOT_OTEL_FILE_EXPORTER_PATH` points at one explicit JSONL export file:
 
 | Variable                          | Agent          | Default                                               |
 | --------------------------------- | -------------- | ----------------------------------------------------- |
@@ -28,6 +28,7 @@ ccusage detects supported data source files from conventional locations by defau
 | `ANTIGRAVITY_DATA_DIR`            | Antigravity    | `~/.gemini/antigravity*` and `~/.config/antigravity`  |
 | `GROK_HOME`                       | Grok Build CLI | `~/.grok`                                             |
 | `ZCODE_HOME`                      | ZCode          | `~/.zcode`                                            |
+| `JUNIE_HOME`                      | Junie          | `~/.junie`                                            |
 
 Example:
 
@@ -51,6 +52,7 @@ export GEMINI_DATA_DIR="/path/to/gemini/tmp,/archive/gemini/tmp"
 export ANTIGRAVITY_DATA_DIR="/path/to/antigravity,/archive/antigravity"
 export GROK_HOME="/path/to/grok-home"
 export ZCODE_HOME="/path/to/zcode-home,/archive/zcode-home"
+export JUNIE_HOME="/path/to/junie-home"
 ccusage daily
 ```
 
@@ -220,7 +222,7 @@ To see which environment variables are being used:
 
 ```bash
 # Show all environment variables
-env | grep -E "CLAUDE|CODEX|OPENCODE|AMP|DROID|CODEBUFF|CLINE|HERMES|PI_AGENT|GOOSE|OPENCLAW|KILO|KIMI|QWEN|COPILOT|GEMINI|GROK|ZCODE|CCUSAGE|LOG_LEVEL"
+env | grep -E "CLAUDE|CODEX|OPENCODE|AMP|DROID|CODEBUFF|CLINE|HERMES|JUNIE|PI_AGENT|GOOSE|OPENCLAW|KILO|KIMI|QWEN|COPILOT|GEMINI|GROK|ZCODE|CCUSAGE|LOG_LEVEL"
 
 # Debug mode shows environment variable usage
 LOG_LEVEL=4 ccusage daily --debug
