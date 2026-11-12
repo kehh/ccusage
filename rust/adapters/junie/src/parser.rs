@@ -4,7 +4,7 @@ use jiff::tz::TimeZone as JiffTimeZone;
 use serde::Deserialize;
 
 use crate::{
-    LoadedEntry, PricingMap, TimestampMs, TokenUsageRaw, UsageEntry, UsageMessage,
+    LoadedEntry, PricingMap, Result, TimestampMs, TokenUsageRaw, UsageEntry, UsageMessage,
     calculate_cost_for_usage_at, cli::CostMode, fast::LinePrefilter, format_date_tz,
     missing_pricing_model_for_usage, stored_cost_for_mode,
 };
@@ -61,7 +61,11 @@ struct JunieWireEvent {
 struct JunieAgentEvent {
     #[serde(default, deserialize_with = "jsonl::non_empty_string")]
     kind: Option<String>,
-    #[serde(rename = "modelUsage", default)]
+    #[serde(
+        rename = "modelUsage",
+        default,
+        deserialize_with = "jsonl::lenient_vec"
+    )]
     model_usage: Vec<JunieModelUsage>,
 }
 
@@ -114,12 +118,10 @@ pub(super) struct JunieUsageEntry {
 }
 
 /// Parse `sessions/index.jsonl` into session metadata, tolerating malformed
-/// lines; a missing or unreadable index yields an empty map.
-pub(super) fn read_session_index(path: &Path) -> BTreeMap<String, JunieSessionMeta> {
-    let Ok(content) = fs::read(path) else {
-        return BTreeMap::new();
-    };
-    jsonl::records::<JunieSessionIndexLine>(&content, None)
+/// lines. A read failure is returned so the loader can log it.
+pub(super) fn read_session_index(path: &Path) -> Result<BTreeMap<String, JunieSessionMeta>> {
+    let content = fs::read(path)?;
+    Ok(jsonl::records::<JunieSessionIndexLine>(&content, None)
         .filter_map(|line| {
             let session_id = line.session_id?;
             Some((
@@ -130,7 +132,7 @@ pub(super) fn read_session_index(path: &Path) -> BTreeMap<String, JunieSessionMe
                 },
             ))
         })
-        .collect()
+        .collect())
 }
 
 /// Read one session's `events.jsonl` into usage entries. Malformed lines are
@@ -139,19 +141,17 @@ pub(super) fn read_session_index(path: &Path) -> BTreeMap<String, JunieSessionMe
 pub(super) fn read_events_file(
     path: &Path,
     index: &BTreeMap<String, JunieSessionMeta>,
-) -> Vec<JunieUsageEntry> {
+) -> Result<Vec<JunieUsageEntry>> {
     let session_id = extract_session_id(path);
     let session_meta = index.get(&session_id);
     let fallback_timestamp = file_modified_timestamp(path);
-    let Ok(content) = fs::read(path) else {
-        return Vec::new();
-    };
+    let content = fs::read(path)?;
     // A real corpus is ~2.3 GB of events with only ~63k usage lines, so
     // prefilter on the byte marker before deserializing any line.
     let prefilter = LinePrefilter::any(&[b"LlmResponseMetadataEvent"]);
-    jsonl::records::<JunieWireLine>(&content, Some(&prefilter))
+    Ok(jsonl::records::<JunieWireLine>(&content, Some(&prefilter))
         .flat_map(|line| line_to_entries(&line, &session_id, session_meta, fallback_timestamp))
-        .collect()
+        .collect())
 }
 
 fn line_to_entries(
@@ -376,7 +376,8 @@ mod tests {
         let entries = read_events_file(
             &fixture.path("sessions/session-260731-115705-er3h/events.jsonl"),
             &BTreeMap::new(),
-        );
+        )
+        .expect("current-format events file should be readable");
 
         assert_eq!(entries.len(), 1);
         let entry = &entries[0];
@@ -402,7 +403,8 @@ mod tests {
         let entries = read_events_file(
             &fixture.path("sessions/session-260731-115705-er3h/events.jsonl"),
             &BTreeMap::new(),
-        );
+        )
+        .expect("multi-model events file should be readable");
 
         assert_eq!(entries.len(), 2);
         assert_eq!(entries[0].model, "gpt-4.1-2025-04-14");
@@ -418,7 +420,7 @@ mod tests {
     fn legacy_event_buckets_under_index_created_at() {
         let fixture = fs_fixture!({
             "sessions/index.jsonl": [
-                r#"{"sessionId":"session-260520-093639-1r02","createdAt":1748000000000,"projectDir":"/tmp/proj-a"}"#,
+                r#"{"sessionId":"session-260520-093639-1r02","createdAt":1779231600000,"projectDir":"/tmp/proj-a"}"#,
             ]
             .join("\n"),
             "sessions/session-260520-093639-1r02/events.jsonl": [
@@ -426,15 +428,22 @@ mod tests {
             ]
             .join("\n"),
         });
-        let index = read_session_index(&fixture.path("sessions/index.jsonl"));
+        let index = read_session_index(&fixture.path("sessions/index.jsonl"))
+            .expect("session index should be readable");
         let entries = read_events_file(
             &fixture.path("sessions/session-260520-093639-1r02/events.jsonl"),
             &index,
-        );
+        )
+        .expect("legacy events file should be readable");
 
         assert_eq!(entries.len(), 1);
-        // The index createdAt wins over the session dir name (which would be 2026-05-20).
-        assert_eq!(entries[0].timestamp.as_millis(), 1748000000000);
+        // The index createdAt (2026-05-19) wins over the session dir name
+        // (2026-05-20), so the legacy event reports on the index date.
+        assert_eq!(entries[0].timestamp.as_millis(), 1779231600000);
+        assert_eq!(
+            format_date_tz(entries[0].timestamp, Some(&utc())),
+            "2026-05-19"
+        );
         assert_eq!(
             index
                 .get("session-260520-093639-1r02")
@@ -456,7 +465,8 @@ mod tests {
         let entries = read_events_file(
             &fixture.path("sessions/session-260520-093639-1r02/events.jsonl"),
             &BTreeMap::new(),
-        );
+        )
+        .expect("legacy events file should be readable");
 
         assert_eq!(entries.len(), 1);
         assert_eq!(
@@ -479,11 +489,43 @@ mod tests {
         let entries = read_events_file(
             &fixture.path("sessions/session-260731-115705-er3h/events.jsonl"),
             &BTreeMap::new(),
-        );
+        )
+        .expect("malformed-line events file should still be readable");
 
         assert_eq!(entries.len(), 1);
         assert_eq!(entries[0].input_tokens, 1121);
         assert_eq!(entries[0].timestamp.as_millis(), 1785470260000);
+    }
+
+    #[test]
+    fn tolerates_malformed_model_usage_arrays() {
+        let fixture = fs_fixture!({
+            "sessions/session-260731-115705-er3h/events.jsonl": [
+                r#"{"kind":"SessionA2uxEvent","event":{"agentEvent":{"kind":"LlmResponseMetadataEvent","modelUsage":[{"model":"gpt-4.1-2025-04-14","cost":0.00225,"inputTokens":1121,"outputTokens":1},"oops",5]}},"timestampMs":1785470253773}"#,
+                r#"{"kind":"SessionA2uxEvent","event":{"agentEvent":{"kind":"LlmResponseMetadataEvent","modelUsage":null}},"timestampMs":1785470253773}"#,
+                r#"{"kind":"SessionA2uxEvent","event":{"agentEvent":{"kind":"LlmResponseMetadataEvent","modelUsage":"nope"}},"timestampMs":1785470253773}"#,
+            ]
+            .join("\n"),
+        });
+        let entries = read_events_file(
+            &fixture.path("sessions/session-260731-115705-er3h/events.jsonl"),
+            &BTreeMap::new(),
+        )
+        .expect("malformed modelUsage arrays should not fail the file");
+
+        // Non-object array elements are skipped; the valid usage still loads.
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].model, "gpt-4.1-2025-04-14");
+    }
+
+    #[test]
+    fn reports_unreadable_files_as_errors() {
+        let fixture = fs_fixture!({});
+        let missing_events = fixture.root().join("sessions/missing/events.jsonl");
+        let missing_index = fixture.root().join("sessions/index.jsonl");
+
+        assert!(read_events_file(&missing_events, &BTreeMap::new()).is_err());
+        assert!(read_session_index(&missing_index).is_err());
     }
 
     #[test]

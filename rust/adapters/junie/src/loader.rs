@@ -1,10 +1,12 @@
-use std::collections::HashSet;
+use std::collections::{BTreeMap, HashSet};
 
 use super::{
     parser::{junie_entry_key, junie_entry_to_loaded, read_events_file, read_session_index},
     paths::{discover_events_files, session_index_path},
 };
-use crate::{LoadedEntry, PricingMap, Result, cli::SharedArgs, parse_tz, read_files_parallel};
+use crate::{
+    LoadedEntry, PricingMap, Result, cli::SharedArgs, debug_log, parse_tz, read_files_parallel,
+};
 
 pub fn load_entries(shared: &SharedArgs, pricing: &PricingMap) -> Result<Vec<LoadedEntry>> {
     crate::progress::track_usage_load(
@@ -17,16 +19,38 @@ pub fn load_entries(shared: &SharedArgs, pricing: &PricingMap) -> Result<Vec<Loa
 fn load_entries_inner(shared: &SharedArgs, pricing: &PricingMap) -> Result<Vec<LoadedEntry>> {
     let tz = parse_tz(shared.timezone.as_deref());
     let files = discover_events_files()?;
-    // The index is shared by every session file, so read it once.
+    // The index is shared by every session file, so read it once. A failed
+    // index read still lets events load, but every project degrades to
+    // "unknown" and legacy timestamps lose their createdAt, so log it.
     let index = session_index_path()
-        .map(|path| read_session_index(&path))
+        .map(|path| {
+            read_session_index(&path).unwrap_or_else(|error| {
+                debug_log(
+                    shared,
+                    format!(
+                        "Failed to read Junie session index {}: {error}",
+                        path.display()
+                    ),
+                );
+                BTreeMap::new()
+            })
+        })
         .unwrap_or_default();
     // Read session files in parallel, then apply the first-wins dedupe
     // sequentially over the original discovery order so the surviving entry
     // per key matches the single-threaded read. An unreadable file yields no
-    // entries; the parser already skips malformed lines.
+    // entries and logs why; the parser already skips malformed lines.
     let loaded = read_files_parallel(&files, shared.single_thread, |file| {
-        read_events_file(file, &index)
+        read_events_file(file, &index).unwrap_or_else(|error| {
+            debug_log(
+                shared,
+                format!(
+                    "Failed to read Junie events file {}: {error}",
+                    file.display()
+                ),
+            );
+            Vec::new()
+        })
     });
     let mut entries = Vec::new();
     let mut seen = HashSet::new();
