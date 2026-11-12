@@ -250,6 +250,12 @@
 			"description": "Path or comma-separated paths to pi-agent sessions directories"
 		}
 	],
+	"project_options": [
+		{
+			"flags": "-p, --project <project>",
+			"description": "Filter to specific project name"
+		}
+	],
 	"opencode_options": [
 		{
 			"flags": "--include-claude-agent",

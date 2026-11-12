@@ -1,0 +1,82 @@
+---
+source: crates/ccusage/tests/junie_cli.rs
+expression: report
+---
+{
+  "daily": [
+    {
+      "cacheCreationTokens": 50,
+      "cacheReadTokens": 100,
+      "date": "2026-10-07",
+      "inputTokens": 1921,
+      "modelBreakdowns": [
+        {
+          "cacheCreationTokens": 0,
+          "cacheReadTokens": 0,
+          "cost": 0.00225,
+          "inputTokens": 1121,
+          "modelName": "gpt-4.1-2025-04-14",
+          "outputTokens": 1,
+          "storedCost": 0.00225
+        },
+        {
+          "cacheCreationTokens": 50,
+          "cacheReadTokens": 100,
+          "cost": 0.0004,
+          "inputTokens": 800,
+          "modelName": "Qwen/Qwen3.6-27B-FP8",
+          "outputTokens": 42,
+          "storedCost": 0.0004
+        }
+      ],
+      "modelsUsed": [
+        "gpt-4.1-2025-04-14",
+        "Qwen/Qwen3.6-27B-FP8"
+      ],
+      "outputTokens": 43,
+      "totalCost": 0.00265,
+      "totalTokens": 2114
+    },
+    {
+      "cacheCreationTokens": 130,
+      "cacheReadTokens": 350,
+      "date": "2026-10-08",
+      "inputTokens": 2255,
+      "modelBreakdowns": [
+        {
+          "cacheCreationTokens": 100,
+          "cacheReadTokens": 300,
+          "cost": 0.005,
+          "inputTokens": 2000,
+          "modelName": "gpt-4.1-2025-04-14",
+          "outputTokens": 250,
+          "storedCost": 0.005
+        },
+        {
+          "cacheCreationTokens": 30,
+          "cacheReadTokens": 50,
+          "cost": 0.0012,
+          "inputTokens": 255,
+          "modelName": "claude-sonnet-4-20250514",
+          "outputTokens": 51,
+          "storedCost": 0.0012
+        }
+      ],
+      "modelsUsed": [
+        "gpt-4.1-2025-04-14",
+        "claude-sonnet-4-20250514"
+      ],
+      "outputTokens": 301,
+      "totalCost": 0.0062,
+      "totalTokens": 3036
+    }
+  ],
+  "totals": {
+    "cacheCreationTokens": 180,
+    "cacheReadTokens": 450,
+    "inputTokens": 4176,
+    "outputTokens": 344,
+    "totalCost": 0.00885,
+    "totalTokens": 5150
+  }
+}

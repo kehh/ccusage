@@ -66,6 +66,9 @@ fn unified_or_command(cli: Cli) -> Command {
             codex_speed: CodexSpeed::Auto,
             include_claude_agent: false,
             start_of_week: WeekDay::Monday,
+            instances: false,
+            project: None,
+            project_aliases: None,
             sources: BTreeMap::new(),
         })
     })

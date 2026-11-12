@@ -2115,6 +2115,7 @@ fn isolated_agents_env(
         "DROID_SESSIONS_DIR",
         "CODEBUFF_DATA_DIR",
         "HERMES_HOME",
+        "JUNIE_HOME",
         "PI_AGENT_DIR",
         "GOOSE_PATH_ROOT",
         "OPENCLAW_DIR",

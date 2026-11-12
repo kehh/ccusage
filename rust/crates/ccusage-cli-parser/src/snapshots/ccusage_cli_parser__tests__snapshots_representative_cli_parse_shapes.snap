@@ -34,9 +34,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Daily",
         "openClawPath": null,
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": true,
@@ -182,9 +185,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Fast",
+        "instances": false,
         "kind": "Monthly",
         "openClawPath": null,
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,
@@ -234,9 +240,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Weekly",
         "openClawPath": null,
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,
@@ -286,9 +295,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Session",
         "openClawPath": null,
         "piPath": "/tmp/pi-sessions",
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,
@@ -338,9 +350,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Session",
         "openClawPath": "/tmp/openclaw",
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,
@@ -390,9 +405,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Daily",
         "openClawPath": null,
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,
@@ -442,9 +460,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Session",
         "openClawPath": null,
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,
@@ -494,9 +515,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Daily",
         "openClawPath": null,
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,
@@ -546,9 +570,12 @@ expression: cases
       "command": {
         "byAgent": false,
         "codexSpeed": "Auto",
+        "instances": false,
         "kind": "Weekly",
         "openClawPath": null,
         "piPath": null,
+        "project": null,
+        "projectAliases": null,
         "sections": null,
         "shared": {
           "breakdown": false,

@@ -62,6 +62,7 @@ let
     "goose"
     "grok"
     "hermes"
+    "junie"
     "kilo"
     "kimi"
     "openclaw"

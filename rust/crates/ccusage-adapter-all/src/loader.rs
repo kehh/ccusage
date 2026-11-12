@@ -12,7 +12,7 @@ use crate::{
     SessionAccumulator, UsageSummary,
     adapter::{
         amp, antigravity, claude, cline, codebuff, codex, copilot, droid, gemini, goose, grok,
-        hermes, kilo, kimi, openclaw, opencode, pi, qwen, zcode,
+        hermes, junie, kilo, kimi, openclaw, opencode, pi, qwen, zcode,
     },
     cli::{AgentReportKind, CodexSpeed, CostMode, NamedPiStore, SharedArgs, SourceArgs, WeekDay},
     date_within_range, filter_loaded_entries_by_date, filter_session_summaries_by_last_activity,
@@ -557,6 +557,21 @@ fn load_base_rows(
                     &pricing["cline"],
                     cline::load_entries,
                     cline::summarize_entries,
+                )
+            }),
+        },
+        AgentLoadSpec {
+            index: 19,
+            agent: BUILT_IN_AGENT_NAMES[19],
+            progress_agent: crate::progress::UsageLoadAgent("Junie"),
+            load: Box::new(|| {
+                load_priced_summary_agent_rows(
+                    "junie",
+                    load_kind,
+                    &source_shared["junie"],
+                    &pricing["junie"],
+                    junie::load_entries,
+                    junie::summarize_entries,
                 )
             }),
         },
@@ -1394,6 +1409,7 @@ mod tests {
             ("DROID_SESSIONS_DIR", None),
             ("CODEBUFF_DATA_DIR", None),
             ("HERMES_HOME", None),
+            ("JUNIE_HOME", None),
             (
                 "PI_AGENT_DIR",
                 Some(fixture.path(pi_agent_dir).into_os_string()),

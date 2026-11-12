@@ -52,6 +52,8 @@ pub struct CcusageConfig {
     pub antigravity: Option<AntigravityConfig>,
     /// Kimi configuration.
     pub kimi: Option<KimiConfig>,
+    /// Junie configuration.
+    pub junie: Option<JunieConfig>,
     /// Qwen configuration.
     pub qwen: Option<QwenConfig>,
     /// Grok Build CLI configuration.
@@ -339,6 +341,38 @@ pub struct KimiCommandsConfig {
     pub weekly: Option<SharedOptions>,
     pub monthly: Option<SharedOptions>,
     pub session: Option<SharedOptions>,
+}
+
+#[derive(Debug, Default, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct JunieConfig {
+    pub defaults: Option<DailyOptions>,
+    pub commands: Option<JunieCommandsConfig>,
+}
+
+#[derive(Debug, Default, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct JunieCommandsConfig {
+    pub daily: Option<DailyOptions>,
+    pub weekly: Option<JuniePeriodOptions>,
+    pub monthly: Option<JuniePeriodOptions>,
+    pub session: Option<JuniePeriodOptions>,
+}
+
+#[derive(Debug, Default, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct JuniePeriodOptions {
+    #[serde(flatten)]
+    pub shared: SharedOptions,
+    #[serde(flatten)]
+    pub project: JunieProjectOptions,
+}
+
+#[derive(Debug, Default, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct JunieProjectOptions {
+    /// Filter to a project name or path.
+    pub project: Option<String>,
 }
 
 #[derive(Debug, Default, Deserialize, JsonSchema)]
@@ -1281,6 +1315,7 @@ mod tests {
                 "goose",
                 "grok",
                 "hermes",
+                "junie",
                 "kilo",
                 "kimi",
                 "opencode",
@@ -1429,6 +1464,29 @@ mod tests {
                     }
                 }
             },
+            "junie": {
+                "defaults": {
+                    "instances": true,
+                    "project": "/tmp/junie",
+                    "projectAliases": "{}"
+                },
+                "commands": {
+                    "daily": {
+                        "instances": true,
+                        "project": "/tmp/junie",
+                        "projectAliases": "{}"
+                    },
+                    "weekly": {
+                        "project": "/tmp/junie"
+                    },
+                    "monthly": {
+                        "project": "/tmp/junie"
+                    },
+                    "session": {
+                        "project": "/tmp/junie"
+                    }
+                }
+            },
             "qwen": {
                 "commands": {
                     "session": {
@@ -1478,6 +1536,29 @@ mod tests {
         }
         for key in ["codex:blocks", "amp statusline", "unknown daily"] {
             assert!(commands.get(key).is_none(), "{key}");
+        }
+    }
+
+    #[test]
+    fn schema_splits_junie_daily_trio_from_period_project_filter() {
+        let schema = generated_schema();
+
+        let daily = schema_properties(&schema, &["junie", "commands", "daily"]);
+        assert!(daily.contains("instances"), "daily includes instances");
+        assert!(daily.contains("project"), "daily includes project");
+        assert!(
+            daily.contains("projectAliases"),
+            "daily includes projectAliases"
+        );
+
+        for report in ["weekly", "monthly", "session"] {
+            let node = schema_properties(&schema, &["junie", "commands", report]);
+            assert!(node.contains("project"), "{report} includes project");
+            assert!(!node.contains("instances"), "{report} excludes instances");
+            assert!(
+                !node.contains("projectAliases"),
+                "{report} excludes projectAliases"
+            );
         }
     }
 
@@ -1612,6 +1693,9 @@ mod tests {
             "grokDefaults": schema_node(&schema, &["grok", "defaults"]),
             "zcodeDefaults": schema_node(&schema, &["zcode", "defaults"]),
             "clineWeekly": schema_node(&schema, &["cline", "commands", "weekly"]),
+            "junieDefaults": schema_node(&schema, &["junie", "defaults"]),
+            "junieDaily": schema_node(&schema, &["junie", "commands", "daily"]),
+            "junieWeekly": schema_node(&schema, &["junie", "commands", "weekly"]),
         }));
     }
 

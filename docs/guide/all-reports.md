@@ -36,7 +36,7 @@ Every section uses the options resolved for the invoked command. For example, `c
 
 ## How Unified Views Work
 
-ccusage detects local usage files from Claude Code, Codex, OpenCode, Amp, Droid, Codebuff, Cline, Hermes Agent, pi-agent, Goose, OpenClaw, Kilo, Kimi, Qwen, GitHub Copilot CLI, Gemini CLI, Antigravity, Grok Build CLI, and ZCode. The same daily, weekly, monthly, and session views can run in two modes:
+ccusage detects local usage files from Claude Code, Codex, OpenCode, Amp, Droid, Codebuff, Cline, Hermes Agent, pi-agent, Goose, OpenClaw, Kilo, Kimi, Qwen, GitHub Copilot CLI, Gemini CLI, Antigravity, Grok Build CLI, ZCode, and Junie. The same daily, weekly, monthly, and session views can run in two modes:
 
 | Mode    | Command example        | What it shows                           |
 | ------- | ---------------------- | --------------------------------------- |
@@ -71,6 +71,7 @@ When one tool runs another, usage can be logged by both. OpenCode's Claude Agent
 | Antigravity    | `antigravity` | `ccusage antigravity daily` |
 | Grok Build CLI | `grok`        | `ccusage grok daily`        |
 | ZCode          | `zcode`       | `ccusage zcode daily`       |
+| Junie          | `junie`       | `ccusage junie daily`       |
 
 ## When to Focus a Source
 
@@ -93,6 +94,7 @@ ccusage copilot daily --json
 ccusage gemini session --json
 ccusage grok daily --json
 ccusage zcode daily --json
+ccusage junie daily --json
 ```
 
 ## Next Steps
