@@ -1,0 +1,78 @@
+---
+source: crates/ccusage/tests/junie_cli.rs
+expression: report
+---
+{
+  "sessions": [
+    {
+      "cacheCreationTokens": 150,
+      "cacheReadTokens": 400,
+      "firstActivity": "2026-10-07T12:00:00.000Z",
+      "inputTokens": 3921,
+      "lastActivity": "2026-10-08T09:30:00.000Z",
+      "modelBreakdowns": [
+        {
+          "cacheCreationTokens": 100,
+          "cacheReadTokens": 300,
+          "cost": 0.00725,
+          "inputTokens": 3121,
+          "modelName": "gpt-4.1-2025-04-14",
+          "outputTokens": 251,
+          "storedCost": 0.00725
+        },
+        {
+          "cacheCreationTokens": 50,
+          "cacheReadTokens": 100,
+          "cost": 0.0004,
+          "inputTokens": 800,
+          "modelName": "Qwen/Qwen3.6-27B-FP8",
+          "outputTokens": 42,
+          "storedCost": 0.0004
+        }
+      ],
+      "modelsUsed": [
+        "gpt-4.1-2025-04-14",
+        "Qwen/Qwen3.6-27B-FP8"
+      ],
+      "outputTokens": 293,
+      "projectPath": "/tmp/junie-project-a",
+      "sessionId": "session-261007-120000-aaaa",
+      "totalCost": 0.00765,
+      "totalTokens": 4764
+    },
+    {
+      "cacheCreationTokens": 30,
+      "cacheReadTokens": 50,
+      "firstActivity": "2026-10-08T13:00:00.000Z",
+      "inputTokens": 255,
+      "lastActivity": "2026-10-08T13:00:00.000Z",
+      "modelBreakdowns": [
+        {
+          "cacheCreationTokens": 30,
+          "cacheReadTokens": 50,
+          "cost": 0.0012,
+          "inputTokens": 255,
+          "modelName": "claude-sonnet-4-20250514",
+          "outputTokens": 51,
+          "storedCost": 0.0012
+        }
+      ],
+      "modelsUsed": [
+        "claude-sonnet-4-20250514"
+      ],
+      "outputTokens": 51,
+      "projectPath": "/tmp/junie-project-b",
+      "sessionId": "session-261008-130000-bbbb",
+      "totalCost": 0.0012,
+      "totalTokens": 386
+    }
+  ],
+  "totals": {
+    "cacheCreationTokens": 180,
+    "cacheReadTokens": 450,
+    "inputTokens": 4176,
+    "outputTokens": 344,
+    "totalCost": 0.00885,
+    "totalTokens": 5150
+  }
+}

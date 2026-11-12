@@ -1,0 +1,59 @@
+---
+source: crates/ccusage/tests/junie_cli.rs
+expression: report
+---
+{
+  "totals": {
+    "cacheCreationTokens": 180,
+    "cacheReadTokens": 450,
+    "inputTokens": 4176,
+    "outputTokens": 344,
+    "totalCost": 0.00885,
+    "totalTokens": 5150
+  },
+  "weekly": [
+    {
+      "cacheCreationTokens": 180,
+      "cacheReadTokens": 450,
+      "inputTokens": 4176,
+      "modelBreakdowns": [
+        {
+          "cacheCreationTokens": 100,
+          "cacheReadTokens": 300,
+          "cost": 0.00725,
+          "inputTokens": 3121,
+          "modelName": "gpt-4.1-2025-04-14",
+          "outputTokens": 251,
+          "storedCost": 0.00725
+        },
+        {
+          "cacheCreationTokens": 30,
+          "cacheReadTokens": 50,
+          "cost": 0.0012,
+          "inputTokens": 255,
+          "modelName": "claude-sonnet-4-20250514",
+          "outputTokens": 51,
+          "storedCost": 0.0012
+        },
+        {
+          "cacheCreationTokens": 50,
+          "cacheReadTokens": 100,
+          "cost": 0.0004,
+          "inputTokens": 800,
+          "modelName": "Qwen/Qwen3.6-27B-FP8",
+          "outputTokens": 42,
+          "storedCost": 0.0004
+        }
+      ],
+      "modelsUsed": [
+        "gpt-4.1-2025-04-14",
+        "Qwen/Qwen3.6-27B-FP8",
+        "claude-sonnet-4-20250514"
+      ],
+      "outputTokens": 344,
+      "totalCost": 0.00885,
+      "totalTokens": 5150,
+      "week": "2026-10-05"
+    }
+  ]
+}
