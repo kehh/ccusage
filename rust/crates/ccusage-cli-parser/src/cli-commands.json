@@ -11,6 +11,9 @@
 		"claude_weekly_options": ["shared_claude_options", "weekly_options", "last_options"],
 		"codex_period_options": ["codex_options", "last_options"],
 		"codex_session_options": ["codex_options", "session_options"],
+		"junie_daily_options": ["agent_options", "daily_options", "last_options"],
+		"junie_period_options": ["agent_options", "project_options", "last_options"],
+		"junie_session_options": ["agent_options", "project_options"],
 		"opencode_period_options": ["agent_options", "opencode_options", "last_options"],
 		"opencode_session_options": ["agent_options", "opencode_options"],
 		"openclaw_combined_options": ["agent_options", "openclaw_options"],
@@ -120,6 +123,10 @@
 			{
 				"name": "cline",
 				"description": "Show Cline usage commands"
+			},
+			{
+				"name": "junie",
+				"description": "Show Junie usage commands"
 			}
 		]
 	},
@@ -912,6 +919,53 @@
 			"description": "Show Cline usage grouped by session",
 			"usage": "ccusage cline session <OPTIONS>",
 			"options": "agent_options"
+		},
+		{
+			"path": ["junie"],
+			"description": "Usage reports for Junie.",
+			"usage": "ccusage junie <COMMANDS>",
+			"commands": [
+				{
+					"name": "daily",
+					"description": "Show Junie usage grouped by date"
+				},
+				{
+					"name": "weekly",
+					"description": "Show Junie usage grouped by week"
+				},
+				{
+					"name": "monthly",
+					"description": "Show Junie usage grouped by month"
+				},
+				{
+					"name": "session",
+					"description": "Show Junie usage grouped by session"
+				}
+			]
+		},
+		{
+			"path": ["junie", "daily"],
+			"description": "Show Junie usage grouped by date",
+			"usage": "ccusage junie daily <OPTIONS>",
+			"options": "junie_daily_options"
+		},
+		{
+			"path": ["junie", "weekly"],
+			"description": "Show Junie usage grouped by week",
+			"usage": "ccusage junie weekly <OPTIONS>",
+			"options": "junie_period_options"
+		},
+		{
+			"path": ["junie", "monthly"],
+			"description": "Show Junie usage grouped by month",
+			"usage": "ccusage junie monthly <OPTIONS>",
+			"options": "junie_period_options"
+		},
+		{
+			"path": ["junie", "session"],
+			"description": "Show Junie usage grouped by session",
+			"usage": "ccusage junie session <OPTIONS>",
+			"options": "junie_session_options"
 		}
 	]
 }

@@ -362,6 +362,7 @@ fn parse_command(
         "cline" => {
             parse_basic_agent_command(parser, shared, "cline", ALL_AGENT_REPORTS, Command::Cline)
         }
+        "junie" => parse_junie_command(parser, shared, config),
         _ => Err(format!("Unknown command '{command}'")),
     }
 }
@@ -633,6 +634,33 @@ fn parse_basic_agent_command(
     Ok(command(agent_command_args(shared, kind)))
 }
 
+/// Junie reports share the daily project trio: `--project` works on every
+/// report, while `--instances` and `--project-aliases` only shape the daily
+/// rows. Config applies before the flag loop so flags override it.
+fn parse_junie_command(
+    parser: &mut ArgParser,
+    shared: SharedArgs,
+    config: &dyn CliConfig,
+) -> Result<Command, String> {
+    let kind = parse_agent_report_kind(parser, "junie", ALL_AGENT_REPORTS)?;
+    let mut args = agent_command_args(shared, kind);
+    config.apply_agent_daily_options(&mut args);
+    while parser.peek().is_some() {
+        if parse_shared_arg_for_command(parser, &mut args.shared)? {
+            continue;
+        }
+        match parser.next_flag()?.as_str() {
+            "-p" | "--project" => args.project = Some(parser.value_for("--project")?),
+            "-i" | "--instances" if kind == AgentReportKind::Daily => args.instances = true,
+            "--project-aliases" if kind == AgentReportKind::Daily => {
+                args.project_aliases = Some(parser.value_for("--project-aliases")?)
+            }
+            flag => return Err(format!("Unknown junie option '{flag}'")),
+        }
+    }
+    Ok(Command::Junie(args))
+}
+
 fn parse_opencode_command(
     parser: &mut ArgParser,
     mut shared: SharedArgs,
@@ -882,6 +910,7 @@ fn is_command(arg: &str) -> bool {
             | "grok"
             | "zcode"
             | "cline"
+            | "junie"
     )
 }
 
@@ -1045,6 +1074,7 @@ fn is_agent_command(command: &str) -> bool {
             | "grok"
             | "zcode"
             | "cline"
+            | "junie"
     )
 }
 
@@ -1055,7 +1085,9 @@ fn agent_report_supported(agent: &str, report: &str) -> bool {
             "daily" | "weekly" | "monthly" | "session" | "blocks" | "statusline"
         ),
         "codex" => matches!(report, "daily" | "monthly" | "session"),
-        "opencode" | "cline" => matches!(report, "daily" | "weekly" | "monthly" | "session"),
+        "opencode" | "cline" | "junie" => {
+            matches!(report, "daily" | "weekly" | "monthly" | "session")
+        }
         "amp" | "droid" | "codebuff" | "hermes" | "pi" | "goose" | "kilo" | "copilot"
         | "gemini" | "antigravity" | "kimi" | "qwen" | "openclaw" | "grok" | "zcode" => {
             matches!(report, "daily" | "monthly" | "session")
@@ -1085,6 +1117,7 @@ fn agent_display_name(agent: &str) -> &'static str {
         "grok" => "Grok",
         "zcode" => "ZCode",
         "cline" => "Cline",
+        "junie" => "Junie",
         _ => unreachable!("agent is prevalidated"),
     }
 }
@@ -1172,7 +1205,8 @@ fn report_shared<'a>(
             | Command::OpenClaw(args)
             | Command::Grok(args)
             | Command::ZCode(args)
-            | Command::Cline(args),
+            | Command::Cline(args)
+            | Command::Junie(args),
         ) => (&args.shared, args.kind != AgentReportKind::Session),
     }
 }

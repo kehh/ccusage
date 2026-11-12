@@ -209,6 +209,7 @@ fn command_snapshot(command: Option<Command>) -> Value {
         Some(Command::Grok(args)) => agent_command_snapshot("grok", args),
         Some(Command::ZCode(args)) => agent_command_snapshot("zcode", args),
         Some(Command::Cline(args)) => agent_command_snapshot("cline", args),
+        Some(Command::Junie(args)) => agent_command_snapshot("junie", args),
     }
 }
 
@@ -225,6 +226,9 @@ fn agent_command_snapshot(agent: &str, args: AgentCommandArgs) -> Value {
         "piPath": args.pi_path,
         "openClawPath": args.open_claw_path,
         "codexSpeed": format!("{:?}", args.codex_speed),
+        "instances": args.instances,
+        "project": args.project,
+        "projectAliases": args.project_aliases,
     })
 }
 
@@ -808,7 +812,7 @@ fn root_help_lists_agent_namespaces_without_nested_commands() {
     let help = help_text();
     let agents = [
         "claude", "codex", "opencode", "amp", "droid", "codebuff", "hermes", "pi", "goose", "kilo",
-        "copilot", "gemini", "kimi", "qwen", "openclaw", "grok", "zcode", "cline",
+        "copilot", "gemini", "kimi", "qwen", "openclaw", "grok", "zcode", "cline", "junie",
     ];
 
     for agent in agents {
@@ -1461,6 +1465,102 @@ fn parses_cline_standard_reports() {
         assert_eq!(args.kind, kind);
         assert!(args.shared.json);
     }
+}
+
+#[test]
+fn parses_junie_standard_reports() {
+    for (report, kind) in [
+        ("daily", AgentReportKind::Daily),
+        ("weekly", AgentReportKind::Weekly),
+        ("monthly", AgentReportKind::Monthly),
+        ("session", AgentReportKind::Session),
+    ] {
+        let cli = parse(&["ccusage", "junie", report, "--json"]);
+        let Some(Command::Junie(args)) = cli.command else {
+            panic!("expected junie {report} command");
+        };
+
+        assert_eq!(args.kind, kind);
+        assert!(args.shared.json);
+    }
+}
+
+#[test]
+fn parses_junie_project_filter_on_every_report() {
+    for report in ["daily", "weekly", "monthly", "session"] {
+        let cli = parse(&["ccusage", "junie", report, "--project", "/tmp/naah"]);
+        let Some(Command::Junie(args)) = cli.command else {
+            panic!("expected junie {report} command");
+        };
+
+        assert_eq!(args.project.as_deref(), Some("/tmp/naah"));
+        assert!(!args.instances, "{report} keeps instances off by default");
+    }
+}
+
+#[test]
+fn parses_junie_instances_on_daily_only() {
+    let cli = parse(&[
+        "ccusage",
+        "junie",
+        "daily",
+        "-i",
+        "--project-aliases",
+        "naah=NAAM",
+    ]);
+    let Some(Command::Junie(args)) = cli.command else {
+        panic!("expected junie daily command");
+    };
+    assert!(args.instances);
+    assert_eq!(args.project_aliases.as_deref(), Some("naah=NAAM"));
+
+    assert_eq!(
+        parse_error(&["ccusage", "junie", "weekly", "-i"]),
+        "Unknown junie option '-i'"
+    );
+}
+
+#[test]
+fn junie_daily_options_apply_from_config_file() {
+    let fixture = fs_fixture!({
+        "ccusage.json": r#"{ "junie": { "defaults": { "instances": true, "project": "/tmp/naah" } } }"#,
+    });
+    let config_path = fixture.path("ccusage.json").to_string_lossy().into_owned();
+    let parse_with_file = |extra: &[&str]| {
+        let mut args = vec![
+            "junie".to_string(),
+            "daily".to_string(),
+            "--config".to_string(),
+            config_path.clone(),
+        ];
+        args.extend(extra.iter().map(|arg| arg.to_string()));
+        let config = ccusage_config::ConfigContext::from_args(&args);
+        Cli::parse_from_with_config(
+            std::iter::once(OsString::from("ccusage"))
+                .chain(args.iter().map(|arg| OsString::from(arg.as_str()))),
+            &config,
+            ccusage_cli::DEFAULT_SESSION_DURATION_HOURS,
+            env!("CARGO_PKG_VERSION"),
+        )
+    };
+
+    let Ok(cli) = parse_with_file(&[]) else {
+        panic!("expected the junie daily command to parse");
+    };
+    let Some(Command::Junie(args)) = cli.command else {
+        panic!("expected junie command");
+    };
+    assert!(args.instances);
+    assert_eq!(args.project.as_deref(), Some("/tmp/naah"));
+
+    let Ok(cli) = parse_with_file(&["--project", "/other"]) else {
+        panic!("expected a flag to override the configured project");
+    };
+    let Some(Command::Junie(args)) = cli.command else {
+        panic!("expected junie command");
+    };
+    assert!(args.instances);
+    assert_eq!(args.project.as_deref(), Some("/other"));
 }
 
 #[test]
