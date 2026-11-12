@@ -12,7 +12,8 @@ use crate::{
 
 pub use loader::load_entries;
 pub(crate) use report::report_from_rows;
-pub use report::{summarize_daily_grouped_by_project, summarize_entries};
+pub(crate) use report::summarize_daily_grouped_by_project;
+pub use report::summarize_entries;
 
 /// Runs a Junie usage report for the requested report kind.
 pub fn run(args: AgentCommandArgs) -> Result<()> {

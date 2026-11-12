@@ -189,7 +189,6 @@ mod tests {
                     ..TokenUsageRaw::default()
                 },
                 0.002,
-                Some(0.002),
                 None,
             ),
             entry(
@@ -205,7 +204,6 @@ mod tests {
                     ..TokenUsageRaw::default()
                 },
                 0.001,
-                Some(0.001),
                 None,
             ),
             entry(
@@ -220,7 +218,6 @@ mod tests {
                 },
                 0.0,
                 None,
-                None,
             ),
             entry(
                 "session-b",
@@ -233,7 +230,6 @@ mod tests {
                     ..TokenUsageRaw::default()
                 },
                 0.0,
-                None,
                 Some("vendor/custom-model"),
             ),
         ]
@@ -247,11 +243,12 @@ mod tests {
         model: &str,
         usage: TokenUsageRaw,
         cost: f64,
-        stored_cost: Option<f64>,
         missing_pricing_model: Option<&str>,
     ) -> LoadedEntry {
         let timestamp = crate::parse_ts_timestamp(timestamp).expect("valid snapshot timestamp");
         let timestamp_text = crate::format_rfc3339_millis(timestamp);
+        // A nonzero snapshot cost stands for a recorded cost from Junie.
+        let stored_cost = (cost != 0.0).then_some(cost);
         // The fixture dates assume UTC; format with an explicit zone so the
         // local timezone cannot shift the 18:00Z entry across a day boundary.
         let tz = crate::parse_tz(Some("UTC"));

@@ -9,7 +9,7 @@ const JUNIE_EVENTS_FILE_NAME: &str = "events.jsonl";
 const JUNIE_INDEX_FILE_NAME: &str = "index.jsonl";
 
 /// Resolve the Junie data root from `JUNIE_HOME`, then `~/.junie`.
-pub(super) fn junie_home() -> Option<PathBuf> {
+fn junie_home() -> Option<PathBuf> {
     if let Ok(home) = env::var(JUNIE_HOME_ENV)
         && !home.trim().is_empty()
     {

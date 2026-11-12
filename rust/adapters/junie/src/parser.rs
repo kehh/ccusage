@@ -15,7 +15,7 @@ const LLM_RESPONSE_METADATA_EVENT: &str = "LlmResponseMetadataEvent";
 /// Session metadata from `sessions/index.jsonl`, keyed by `sessionId`.
 #[derive(Debug, Clone)]
 pub(super) struct JunieSessionMeta {
-    pub(super) created_at: Option<i64>,
+    created_at: Option<i64>,
     pub(super) project_dir: Option<String>,
 }
 
